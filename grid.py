@@ -146,7 +146,10 @@ screen = pygame.display.set_mode(WINDOW_SIZE)
 dijkstraButton = Button(GREY, 0, SCREEN_WIDTH, SCREEN_WIDTH/3, BUTTON_HEIGHT, "Dijkstra (=BFS when constant distances)")
 dfsButton = Button(GREY, 0, SCREEN_WIDTH + BUTTON_HEIGHT, SCREEN_WIDTH/6, BUTTON_HEIGHT, "DFS")
 bfsButton = Button(GREY, 0 + SCREEN_WIDTH/6 + 1, SCREEN_WIDTH + BUTTON_HEIGHT, SCREEN_WIDTH/6, BUTTON_HEIGHT, "BFS")
-astarButton = Button(GREY, 0, SCREEN_WIDTH + BUTTON_HEIGHT*2, SCREEN_WIDTH/3, BUTTON_HEIGHT, "A*")
+
+astarButton = Button(GREY, 0, SCREEN_WIDTH+BUTTON_HEIGHT*2, SCREEN_WIDTH/6, BUTTON_HEIGHT, "A*")
+greedyButton = Button(GREY,  0 + SCREEN_WIDTH/6 + 1, SCREEN_WIDTH+BUTTON_HEIGHT*2, SCREEN_WIDTH/6, BUTTON_HEIGHT,"Greedy" )
+
 resetButton = Button(GREY, SCREEN_WIDTH/3, SCREEN_WIDTH, SCREEN_WIDTH/3, BUTTON_HEIGHT*2, "Reset")
 mazeButton = Button(GREY, (SCREEN_WIDTH/3)*2, SCREEN_WIDTH, SCREEN_WIDTH/6, BUTTON_HEIGHT, "Maze (Prim)")
 altPrimButton = Button(GREY, (SCREEN_WIDTH/6)*5, SCREEN_WIDTH, SCREEN_WIDTH/6, BUTTON_HEIGHT, "Maze (Alt Prim)")
@@ -243,6 +246,15 @@ while not done:
                 path_found = dijkstra(grid, START_POINT, END_POINT, astar=True)
                 grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
                 algorithm_run = 'astar'
+            # When the Greedy Button is clicked
+            elif greedyButton.isOver(pos):
+                clear_visited()
+                update_gui(draw_background=False, draw_buttons=False)
+                if VISUALISE:
+                    pygame.display.flip()
+                path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'greedy'
 
             # When the Reset Button is clicked
             elif resetButton.isOver(pos):
@@ -398,7 +410,7 @@ while not done:
         
         clear_visited()
         
-        valid_algorithms = ['dijkstra', 'astar', 'dfs', 'bfs']
+        valid_algorithms = ['dijkstra', 'astar', 'dfs', 'bfs','greedy']
 
         assert algorithm_run in valid_algorithms, f"last algorithm used ({algorithm_run}) is not in valid algorithms: {valid_algorithms}"
 
@@ -406,6 +418,8 @@ while not done:
             path_found = dijkstra(grid, START_POINT, END_POINT, visualise=False)
         elif algorithm_run == 'astar':
             path_found = dijkstra(grid, START_POINT, END_POINT, visualise=False, astar=True)
+        elif algorithm_run == 'greedy':
+            path_found = dijkstra(grid, START_POINT, END_POINT, visualise=False, greedy = True)
         elif algorithm_run == 'dfs':
             path_found = xfs(grid, START_POINT, END_POINT, x='d', visualise=False)
         elif algorithm_run == 'bfs':
@@ -775,7 +789,7 @@ while not done:
     ### PATHFINDING ALGORITHMS ###
 
     # Dijkstra's pathfinding algorithm, with the option to switch to A* by adding a heuristic of expected distance to end node
-    def dijkstra(mazearray, start_point=(0,0), goal_node=False, display=pygame.display, visualise=VISUALISE, diagonals=DIAGONALS, astar=False):
+    def dijkstra(mazearray, start_point=(0,0), goal_node=False, display=pygame.display, visualise=VISUALISE, diagonals=DIAGONALS, astar=False, greedy = False):
 
         heuristic = 0
         distance = 0
@@ -792,6 +806,8 @@ while not done:
         v_distances = {}
         #Track parent nodes
         came_from = {}
+
+        print(greedy)
 
         # If a goal_node is not set, put it in the bottom right (1 square away from either edge)
         if not goal_node:
@@ -820,6 +836,7 @@ while not done:
                     current_node=current_node,
                     current_distance=current_distance,
                     astar=astar,
+                    greedy = greedy,
                     came_from = came_from
                 )
 
@@ -868,17 +885,15 @@ while not done:
 
 
     # (DIJKSTRA/A*) loop to check all neighbours of the "current node"
-    def neighbours_loop(neighbour, mazearr, visited_nodes, unvisited_nodes, queue, v_distances, current_node, current_distance, diags=DIAGONALS, astar=False, greed = False, came_from={}):
+    def neighbours_loop(neighbour, mazearr, visited_nodes, unvisited_nodes, queue, v_distances, current_node, current_distance, diags=DIAGONALS, astar=False, greedy = False, came_from={}):
         
         neighbour, ntype = neighbour
 
         heuristic = 0
         #print("here")
-        if astar:
+        if astar or greedy:
             heuristic = abs(END_POINT[0] - neighbour[0]) + abs(END_POINT[1] - neighbour[1])
-            #heuristic *= 1 # if this goes above 1 then the shortest path is not guaranteed, but the attempted route becomes more direct
-            #print(heuristic)
-            
+            heuristic *= 1 # if this goes above 1 then the shortest path is not guaranteed, but the attempted route becomes more direct
         
         # If the neighbour has already been visited 
         if neighbour in visited_nodes:
@@ -906,10 +921,11 @@ while not done:
         
         # Set the loop in motion until we get back to the start
         while current_node in came_from:
-
             current_node = came_from[current_node]
             path.append(current_node)
-            draw_square(10, 10, grid=mazearray)
+            #print(current_node)
+            mazearray[current_node[0]][current_node[1]].update(is_path=True)
+            draw_square(current_node[0], current_node[1], grid=mazearray)
             #print("here")
 
         #draw_square(10, 10, grid=mazearray)
@@ -992,7 +1008,10 @@ while not done:
             dijkstraButton.draw(screen, (0,0,0))
             dfsButton.draw(screen, (0,0,0))
             bfsButton.draw(screen, (0,0,0))
+
             astarButton.draw(screen, (0,0,0))
+            greedyButton.draw(screen,(0,0,0))
+
             resetButton.draw(screen, (0,0,0))
             mazeButton.draw(screen, (0,0,0))
             altPrimButton.draw(screen, (0,0,0))
