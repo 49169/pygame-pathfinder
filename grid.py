@@ -790,6 +790,8 @@ while not done:
 
         queue.push(distance+heuristic, distance, start_point)
         v_distances = {}
+        #Track parent nodes
+        came_from = {}
 
         # If a goal_node is not set, put it in the bottom right (1 square away from either edge)
         if not goal_node:
@@ -817,7 +819,8 @@ while not done:
                     v_distances=v_distances, 
                     current_node=current_node,
                     current_distance=current_distance,
-                    astar=astar
+                    astar=astar,
+                    came_from = came_from
                 )
 
             # When we have checked the current node, add and remove appropriately
@@ -836,7 +839,7 @@ while not done:
                 # then we update the grid with each loop
                 if visualise:
                     update_square(current_node[0],current_node[1])
-                    time.sleep(0.000001)
+                    time.sleep(0.00001)
             
             # If there are no nodes in the queue then we return False (no path)
             if len(queue.show()) == 0:
@@ -850,7 +853,7 @@ while not done:
         visited_nodes.add(goal_node)
 
         # Draw the path back from goal node to start node
-        trace_back(goal_node, start_point, v_distances, visited_nodes, n, mazearray, diags=diagonals, visualise=visualise)
+        trace_back(goal_node, start_point, v_distances, visited_nodes, n, mazearray, diags=diagonals, visualise=visualise, came_from =came_from)
 
         end = time.perf_counter()
         num_visited = len(visited_nodes)
@@ -865,7 +868,7 @@ while not done:
 
 
     # (DIJKSTRA/A*) loop to check all neighbours of the "current node"
-    def neighbours_loop(neighbour, mazearr, visited_nodes, unvisited_nodes, queue, v_distances, current_node, current_distance, diags=DIAGONALS, astar=False, greed = False):
+    def neighbours_loop(neighbour, mazearr, visited_nodes, unvisited_nodes, queue, v_distances, current_node, current_distance, diags=DIAGONALS, astar=False, greed = False, came_from={}):
         
         neighbour, ntype = neighbour
 
@@ -885,14 +888,16 @@ while not done:
             unvisited_nodes.discard(neighbour)
         else:
             modifier = mazearr[neighbour[0]][neighbour[1]].distance_modifier
+            coordinate = (neighbour[0],neighbour[1])
+            came_from[coordinate] = current_node
             if ntype == "+":
-                queue.push(current_distance+(1*modifier)+heuristic, current_distance, neighbour)
+                queue.push(current_distance+(1*modifier)+heuristic, current_distance+(1*modifier), neighbour)
             elif ntype == "x": 
                 queue.push(current_distance+((2**0.5)*modifier)+heuristic, current_distance+((2**0.5)*modifier), neighbour)
                 print("ntypex")
 
     # (DIJKSTRA/A*) trace a path back from the end node to the start node after the algorithm has been run
-    def trace_back(goal_node, start_node, v_distances, visited_nodes, n, mazearray, diags=False, visualise=VISUALISE):
+    def trace_back(goal_node, start_node, v_distances, visited_nodes, n, mazearray, diags=False, visualise=VISUALISE, came_from={}):
         
         # begin the list of nodes which will represent the path back, starting with the end node
         path = [goal_node]
@@ -900,36 +905,14 @@ while not done:
         current_node = goal_node
         
         # Set the loop in motion until we get back to the start
-        while current_node != start_node:
-            # Start an empty priority queue for the current node to check all neighbours
-            neighbour_distances = PriorityQueue()
-            
-            neighbours = get_neighbours(current_node, n, diags)
+        while current_node in came_from:
 
-            # Had some errors during testing, not sure if this is still necessary
-            try:
-                distance = v_distances[current_node]
-            except Exception as e:
-                print(e)
-            
-            # For each neighbour of the current node, add its location and distance
-            # to a priority queue
-            for neighbour, ntype in neighbours:
-                if neighbour in v_distances:
-                    distance = v_distances[neighbour]
-                    neighbour_distances.push(distance, neighbour)
-            
-            # Pop the lowest value off; that is the next node in our path
-            distance, smallest_neighbour = neighbour_distances.pop()
-            mazearray[smallest_neighbour[0]][smallest_neighbour[1]].update(is_path=True)
-            
-            # Update pygame display
-            draw_square(smallest_neighbour[0],smallest_neighbour[1],grid=mazearray)
-            # update_square(smallest_neighbour[0],smallest_neighbour[1])            
-            
-            path.append(smallest_neighbour)
-            current_node = smallest_neighbour
+            current_node = came_from[current_node]
+            path.append(current_node)
+            draw_square(10, 10, grid=mazearray)
+            #print("here")
 
+        #draw_square(10, 10, grid=mazearray)
         pygame.display.flip()
 
         mazearray[start_node[0]][start_node[1]].update(is_path=True)
