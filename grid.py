@@ -872,8 +872,8 @@ while not done:
         heuristic = 0
         #print("here")
         if astar:
-            heuristic += abs(END_POINT[0] - neighbour[0]) + abs(END_POINT[1] - neighbour[1])
-            heuristic *= 1 # if this goes above 1 then the shortest path is not guaranteed, but the attempted route becomes more direct
+            heuristic = abs(END_POINT[0] - neighbour[0]) + abs(END_POINT[1] - neighbour[1])
+            #heuristic *= 1 # if this goes above 1 then the shortest path is not guaranteed, but the attempted route becomes more direct
             #print(heuristic)
             
         
@@ -886,7 +886,7 @@ while not done:
         else:
             modifier = mazearr[neighbour[0]][neighbour[1]].distance_modifier
             if ntype == "+":
-                queue.push(current_distance+(1*modifier)+heuristic, current_distance+(1*modifier), neighbour)
+                queue.push(current_distance+(1*modifier)+heuristic, current_distance, neighbour)
             elif ntype == "x": 
                 queue.push(current_distance+((2**0.5)*modifier)+heuristic, current_distance+((2**0.5)*modifier), neighbour)
                 print("ntypex")
