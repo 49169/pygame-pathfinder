@@ -105,7 +105,7 @@ MARGIN = 0
 
 # Create a 2 dimensional array (a list of lists)
 grid = []
-ROWS = 95
+ROWS = 64
 # Iterate through every row and column, adding blank nodes
 for row in range(ROWS):
     grid.append([])
@@ -120,7 +120,7 @@ grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
 grid[END_POINT[0]][END_POINT[1]].update(nodetype='end')
 
 DIAGONALS = False
-VISUALISE = True
+VISUALISE = False
 
 # Used for handling click & drag
 mouse_drag = False
@@ -554,6 +554,11 @@ while not done:
 
         neighbours = get_neighbours(start_point, n)
 
+        for row in range(ROWS):
+            for colum in range(ROWS):
+                if random.random() > 0.2:
+                    mazearray[row][colum].update(nodetype = 'blank')
+
         for neighbour, ntype in neighbours:
             if mazearray[neighbour[0]][neighbour[1]].nodetype == 'wall':
                 walls.add(neighbour)
@@ -578,7 +583,7 @@ while not done:
                     neighbouring_walls.add(wall_neighbour)
                     
             if pcount <= 1:
-                mazearray[wall[0]][wall[1]].update(nodetype='blank')
+                #mazearray[wall[0]][wall[1]].update(nodetype='blank')
                 if visualise:
                     draw_square(wall[0],wall[1],mazearray)
                     update_square(wall[0],wall[1])
@@ -807,7 +812,7 @@ while not done:
         #Track parent nodes
         came_from = {}
 
-        print(greedy)
+        #print(greedy)
 
         # If a goal_node is not set, put it in the bottom right (1 square away from either edge)
         if not goal_node:
@@ -906,7 +911,11 @@ while not done:
             coordinate = (neighbour[0],neighbour[1])
             came_from[coordinate] = current_node
             if ntype == "+":
-                queue.push(current_distance+(1*modifier)+heuristic, current_distance+(1*modifier), neighbour)
+                cost = 1
+                if not (greedy):
+                    
+                    cost = current_distance+(1*modifier)
+                queue.push(cost+heuristic, cost, neighbour)
             elif ntype == "x": 
                 queue.push(current_distance+((2**0.5)*modifier)+heuristic, current_distance+((2**0.5)*modifier), neighbour)
                 print("ntypex")
@@ -940,6 +949,8 @@ while not done:
         dfs (depth-first search) on your chosen mazearray (grid format), with chosen start_point (x,y)
         and chosen goal_node (x,y)
         '''
+
+        #print("start")
         assert x == 'b' or x == 'd', "x should equal 'b' or 'd' to make this bfs or dfs"
 
         # Get the dimensions of the (square) maze
@@ -950,9 +961,14 @@ while not done:
         mydeque.append(start_point)
         visited_nodes = set([])
         path_dict = {start_point: None}
+        
+        stop = False
+
+        start = time.perf_counter()
 
         # Main algorithm loop
-        while len(mydeque) > 0:
+        while len(mydeque) > 0 and stop!= True:
+            #print(len(mydeque))
             if x == 'd':
                 current_node = mydeque.pop()
             elif x == 'b':
@@ -961,14 +977,16 @@ while not done:
             if current_node == goal_node:
                 # Trace back to start using path_dict
                 path_node = goal_node
-                while True:
+                while stop != True:
                     path_node = path_dict[path_node]
                     mazearray[path_node[0]][path_node[1]].update(is_path = True)
                     draw_square(path_node[0],path_node[1],grid=mazearray)
                     if visualise:
                         update_square(path_node[0],path_node[1])
                     if path_node == start_point:
-                        return True
+                        stop = True
+                #print("stopped")
+                
             
             if mazearray[current_node[0]][current_node[1]].nodetype == 'wall':
                 continue
@@ -986,7 +1004,13 @@ while not done:
                     # Used for tracing back
                     if neighbour not in visited_nodes:
                         path_dict[neighbour] = current_node
-        
+            #print(len(mydeque))
+        #print("stop")
+        end = time.perf_counter()
+        num_visited = len(visited_nodes)
+        time_taken = end-start
+        print(f"Program finished in {time_taken:.4f} seconds after checking {num_visited} nodes. That is {time_taken/num_visited:.8f} seconds per node.")
+       # print("here")
         pygame.display.flip()
         return False
 
