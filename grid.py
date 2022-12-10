@@ -865,15 +865,17 @@ while not done:
 
 
     # (DIJKSTRA/A*) loop to check all neighbours of the "current node"
-    def neighbours_loop(neighbour, mazearr, visited_nodes, unvisited_nodes, queue, v_distances, current_node, current_distance, diags=DIAGONALS, astar=False):
+    def neighbours_loop(neighbour, mazearr, visited_nodes, unvisited_nodes, queue, v_distances, current_node, current_distance, diags=DIAGONALS, astar=False, greed = False):
         
         neighbour, ntype = neighbour
 
         heuristic = 0
-
+        #print("here")
         if astar:
             heuristic += abs(END_POINT[0] - neighbour[0]) + abs(END_POINT[1] - neighbour[1])
             heuristic *= 1 # if this goes above 1 then the shortest path is not guaranteed, but the attempted route becomes more direct
+            #print(heuristic)
+            
         
         # If the neighbour has already been visited 
         if neighbour in visited_nodes:
@@ -887,6 +889,7 @@ while not done:
                 queue.push(current_distance+(1*modifier)+heuristic, current_distance+(1*modifier), neighbour)
             elif ntype == "x": 
                 queue.push(current_distance+((2**0.5)*modifier)+heuristic, current_distance+((2**0.5)*modifier), neighbour)
+                print("ntypex")
 
     # (DIJKSTRA/A*) trace a path back from the end node to the start node after the algorithm has been run
     def trace_back(goal_node, start_node, v_distances, visited_nodes, n, mazearray, diags=False, visualise=VISUALISE):
