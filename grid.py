@@ -21,6 +21,8 @@ DARK_GREEN = (0, 128, 0)
 DARKER_GREEN = (0, 50, 0)
 DARK_BLUE = (0, 0, 128)
 
+
+
 # For creating Buttons
 class Button():
     def __init__(self, color, x, y, width, height, text=''):
@@ -105,7 +107,7 @@ MARGIN = 0
 
 # Create a 2 dimensional array (a list of lists)
 grid = []
-ROWS = 64
+ROWS = 256
 # Iterate through every row and column, adding blank nodes
 for row in range(ROWS):
     grid.append([])
@@ -113,8 +115,11 @@ for row in range(ROWS):
         grid[row].append(Node('blank')) 
 
 # Set start and end points for the pathfinder
-START_POINT = (random.randrange(2,ROWS-1,2)-1,random.randrange(2,ROWS-1,2)-1)
-END_POINT = (random.randrange(2,ROWS-1,2),random.randrange(2,ROWS-1,2))
+START_POINT = (0,ROWS-1)
+END_POINT = (ROWS-1,0)
+
+astarTime = 0
+astarNodes = 0
 
 grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
 grid[END_POINT[0]][END_POINT[1]].update(nodetype='end')
@@ -140,7 +145,7 @@ FONT = pygame.font.SysFont('arial', 6)
 SCREEN_WIDTH = ROWS * (WIDTH + MARGIN) + MARGIN * 2
 SCREEN_HEIGHT = SCREEN_WIDTH + BUTTON_HEIGHT * 3
 WINDOW_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-screen = pygame.display.set_mode(WINDOW_SIZE)
+screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
 
 # Make some Buttons
 dijkstraButton = Button(GREY, 0, SCREEN_WIDTH, SCREEN_WIDTH/3, BUTTON_HEIGHT, "Dijkstra (=BFS when constant distances)")
@@ -213,9 +218,19 @@ while not done:
                 update_gui(draw_background=False, draw_buttons=False)
                 if VISUALISE:    
                     pygame.display.flip()
-                path_found = dijkstra(grid, START_POINT, END_POINT)
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'dijkstra'
+                astarNodes =0
+                astarTime = 0
+                for x in range(30):
+                    path_found = dijkstra(grid, START_POINT, END_POINT)
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'dijkstra'
+                time_taken = astarTime/30
+                num_visited = astarNodes/30
+                if(time_taken == 0 or num_visited == 0):
+                    print("no solution")
+                
+                else:
+                    print(f"Dijkstra finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
             
             # When the DFS Button is clicked
             elif dfsButton.isOver(pos):
@@ -223,9 +238,19 @@ while not done:
                 update_gui(draw_background=False, draw_buttons=False)
                 if VISUALISE:
                     pygame.display.flip()
-                path_found = xfs(grid, START_POINT, END_POINT, x='d')
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'dfs'
+                astarTime = 0
+                astarNodes = 0
+                for x in range(30):
+                    path_found = xfs(grid, START_POINT, END_POINT, x='d')
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'dfs'
+                time_taken = astarTime/30
+                num_visited = astarNodes/30
+                if(time_taken == 0 or num_visited == 0):
+                    print("no solution")
+                
+                else:
+                    print(f"DFS finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
             
             # When the DFS Button is clicked
             elif bfsButton.isOver(pos):
@@ -233,28 +258,57 @@ while not done:
                 update_gui(draw_background=False, draw_buttons=False)
                 if VISUALISE:
                     pygame.display.flip()
-                path_found = xfs(grid, START_POINT, END_POINT, x='b')
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'bfs'
-
+                astarTime = 0
+                astarNodes = 0
+                for x in range(30):
+                    path_found = xfs(grid, START_POINT, END_POINT, x='b')
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'bfs'
+                time_taken = astarTime/30
+                num_visited = astarNodes/30 
+                if(time_taken == 0 or num_visited == 0):
+                    print("no solution")
+                
+                else: 
+                    print(f"BFS finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
             # When the A* Button is clicked
             elif astarButton.isOver(pos):
                 clear_visited()
                 update_gui(draw_background=False, draw_buttons=False)
                 if VISUALISE:
                     pygame.display.flip()
-                path_found = dijkstra(grid, START_POINT, END_POINT, astar=True)
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'astar'
+                astarTime =0
+                astarNodes = 0
+                for x in range(10):
+                    path_found = dijkstra(grid, START_POINT, END_POINT, astar=True)
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'astar'
+                time_taken = astarTime/30
+                num_visited = astarNodes/30
+                if(time_taken == 0 or num_visited == 0):
+                    print("no solution")
+                
+                else:
+                    print(f"A-Star finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
             # When the Greedy Button is clicked
             elif greedyButton.isOver(pos):
                 clear_visited()
                 update_gui(draw_background=False, draw_buttons=False)
                 if VISUALISE:
                     pygame.display.flip()
-                path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'greedy'
+                astarTime =0
+                astarNodes = 0
+                for x in range(10):
+                    path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'greedy'
+                time_taken = astarTime/30
+                num_visited = astarNodes/30
+                if(time_taken == 0 or num_visited == 0):
+                    print("no solution")
+                
+                else:
+                    print(f"Greedy BFS finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
 
             # When the Reset Button is clicked
             elif resetButton.isOver(pos):
@@ -690,9 +744,49 @@ while not done:
     # of perpendicular walls, creating an unsolveable maze
     # TODO: generalise this
     def gaps_to_offset():
-        return [x for x in range(2, ROWS, 3)]
+        return [x for x in range(0, ROWS-1, 4)]
 
     # Recursive division algorithm
+    N, S, E, W = 1, 2, 4, 8
+    HORIZONTAL, VERTICAL = 0, 1
+
+    def recursive_division2(grid = grid, mx = 0, my=0, ax=ROWS, ay = ROWS):
+        dx = ax - mx
+        dy = ay - my
+        if dx < 2 or dy < 2:
+            # make a hallway
+            if dx > 1:
+                y = my
+                for x in range(mx, ax-1):
+                    grid[y][x].update(nodetype='wall')
+                    grid[y][x+1].update(nodetype='wall')
+            elif dy > 1:
+                x = mx
+                for y in range(my, ay-1):
+                    grid[y][x].update(nodetype='wall')
+                    grid[y+1][x].update(nodetype='wall')
+            return
+
+        wall = HORIZONTAL if dy > dx else (VERTICAL if dx > dy else random.randrange(2))
+
+        xp = random.randrange(mx, ax-(wall == VERTICAL))
+        yp = random.randrange(my, ay-(wall == HORIZONTAL))
+
+        x, y = xp, yp
+        if wall == HORIZONTAL:
+            ny = y + 1
+            grid[y][x].update(nodetype='wall')
+            grid[ny][x].update(nodetype='wall')
+
+            #recursive_division2(grid, mx, my, ax, ny)
+            #recursive_division2(grid, mx, ny, ax, ay)
+        else:
+            nx = x + 1
+            grid[y][x].update(nodetype='wall')
+            grid[y][nx].update(nodetype='wall')
+
+            #recursive_division2(grid, mx, my, nx, ay)
+            #recursive_division2(grid, nx, my, ax, ay)
     def recursive_division(chamber=None, visualise=VISUALISE, gaps_to_offset=gaps_to_offset(), halving=True):
 
         sleep = 0.001
@@ -700,8 +794,8 @@ while not done:
 
         # When no "chamber" is input,we are starting with the base grid
         if chamber == None:
-            chamber_width = len(grid)
-            chamber_height = len(grid[1])
+            chamber_width = int(len(grid))
+            chamber_height = int(len(grid[1]))
             chamber_left = 0
             chamber_top = 0
         else:
@@ -714,7 +808,7 @@ while not done:
             x_divide = int(chamber_width/2)
             y_divide = int(chamber_height/2)
         
-        if chamber_width < 3:
+        if chamber_width < 5:
             pass
         else:
             # draw x wall
@@ -725,7 +819,7 @@ while not done:
                     update_square(chamber_left + x_divide, chamber_top + y)
                     time.sleep(sleep_walls)
          
-        if chamber_height < 3:
+        if chamber_height < 5:
             pass
         else:
             # draw y wall
@@ -795,7 +889,8 @@ while not done:
 
     # Dijkstra's pathfinding algorithm, with the option to switch to A* by adding a heuristic of expected distance to end node
     def dijkstra(mazearray, start_point=(0,0), goal_node=False, display=pygame.display, visualise=VISUALISE, diagonals=DIAGONALS, astar=False, greedy = False):
-
+        global astarTime
+        global astarNodes
         heuristic = 0
         distance = 0
 
@@ -880,9 +975,11 @@ while not done:
         end = time.perf_counter()
         num_visited = len(visited_nodes)
         time_taken = end-start
+        astarTime += time_taken
+        astarNodes += num_visited
 
         # Print timings
-        print(f"Program finished in {time_taken:.4f} seconds after checking {num_visited} nodes. That is {time_taken/num_visited:.8f} seconds per node.")
+        #print(f"Program finished in {time_taken:.4f} seconds after checking {num_visited} nodes. That is {time_taken/num_visited:.8f} seconds per node.")
         
         # The commented out line returns the distance to the end node
         # return False if v_distances[goal_node] == float('inf') else v_distances[goal_node]
@@ -949,6 +1046,8 @@ while not done:
         dfs (depth-first search) on your chosen mazearray (grid format), with chosen start_point (x,y)
         and chosen goal_node (x,y)
         '''
+        global astarNodes
+        global astarTime
 
         #print("start")
         assert x == 'b' or x == 'd', "x should equal 'b' or 'd' to make this bfs or dfs"
@@ -1009,7 +1108,9 @@ while not done:
         end = time.perf_counter()
         num_visited = len(visited_nodes)
         time_taken = end-start
-        print(f"Program finished in {time_taken:.4f} seconds after checking {num_visited} nodes. That is {time_taken/num_visited:.8f} seconds per node.")
+        astarTime += time_taken
+        astarNodes += num_visited
+        #print(f"Program finished in {time_taken:.4f} seconds after checking {num_visited} nodes. That is {time_taken/num_visited:.8f} seconds per node.")
        # print("here")
         pygame.display.flip()
         return False
@@ -1055,9 +1156,11 @@ while not done:
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
- 
+    
     # --- Limit to 60 frames per second
     clock.tick(60)
+
+
  
 # Close the window and quit.
 pygame.quit()
