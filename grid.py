@@ -107,7 +107,7 @@ MARGIN = 0
 
 # Create a 2 dimensional array (a list of lists)
 grid = []
-ROWS = 256
+ROWS = 128
 # Iterate through every row and column, adding blank nodes
 for row in range(ROWS):
     grid.append([])
@@ -145,20 +145,24 @@ FONT = pygame.font.SysFont('arial', 6)
 SCREEN_WIDTH = ROWS * (WIDTH + MARGIN) + MARGIN * 2
 SCREEN_HEIGHT = SCREEN_WIDTH + BUTTON_HEIGHT * 3
 WINDOW_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
+
 screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
 
+screen_width = (screen.get_height()) 
+
 # Make some Buttons
-dijkstraButton = Button(GREY, 0, SCREEN_WIDTH, SCREEN_WIDTH/3, BUTTON_HEIGHT, "Dijkstra (=BFS when constant distances)")
-dfsButton = Button(GREY, 0, SCREEN_WIDTH + BUTTON_HEIGHT, SCREEN_WIDTH/6, BUTTON_HEIGHT, "DFS")
-bfsButton = Button(GREY, 0 + SCREEN_WIDTH/6 + 1, SCREEN_WIDTH + BUTTON_HEIGHT, SCREEN_WIDTH/6, BUTTON_HEIGHT, "BFS")
+dijkstraButton = Button(GREY, 0, (screen.get_height()/10)*7, screen.get_width()/6, screen.get_height()/10, "Dijkstra (=BFS when constant distances)")
+dfsButton = Button(GREY, 0, (screen.get_height()/10)*8, screen.get_width()/6, screen.get_height()/10, "DFS")
+bfsButton = Button(GREY, 0 + screen.get_width()/6, (screen.get_height()/10)*8, screen.get_width()/6, screen.get_height()/10, "BFS")
 
-astarButton = Button(GREY, 0, SCREEN_WIDTH+BUTTON_HEIGHT*2, SCREEN_WIDTH/6, BUTTON_HEIGHT, "A*")
-greedyButton = Button(GREY,  0 + SCREEN_WIDTH/6 + 1, SCREEN_WIDTH+BUTTON_HEIGHT*2, SCREEN_WIDTH/6, BUTTON_HEIGHT,"Greedy" )
+astarButton = Button(GREY, 0, (screen.get_height()/10)*9, screen.get_width()/6, screen.get_height()/10, "A*")
+greedyButton = Button(GREY,  0 + screen.get_width()/6, (screen.get_height()/10)*9, screen.get_width()/6, screen.get_height()/10,"Greedy" )
 
-resetButton = Button(GREY, SCREEN_WIDTH/3, SCREEN_WIDTH, SCREEN_WIDTH/3, BUTTON_HEIGHT*2, "Reset")
-mazeButton = Button(GREY, (SCREEN_WIDTH/3)*2, SCREEN_WIDTH, SCREEN_WIDTH/6, BUTTON_HEIGHT, "Maze (Prim)")
-altPrimButton = Button(GREY, (SCREEN_WIDTH/6)*5, SCREEN_WIDTH, SCREEN_WIDTH/6, BUTTON_HEIGHT, "Maze (Alt Prim)")
-recursiveMazeButton = Button(GREY, (SCREEN_WIDTH/3)*2, SCREEN_WIDTH + BUTTON_HEIGHT, SCREEN_WIDTH/3, BUTTON_HEIGHT, "Maze (recursive div)")
+resetButton = Button(GREY, 0 + (screen.get_width()/6)*2, (screen.get_height()/10)*7, screen.get_width()/6, screen.get_height()/10, "Reset")
+mazeButton = Button(GREY, 0 + (screen.get_width()/6)*3, (screen.get_height()/10)*7, screen.get_width()/6, screen.get_height()/10, "Maze (Prim)")
+altPrimButton = Button(GREY, 0 + (screen.get_width()/6)*4, (screen.get_height()/10)*7, screen.get_width()/6, screen.get_height()/10, "Maze (Alt Prim)")
+recursiveMazeButton = Button(GREY, 0 + (screen.get_width()/6)*5, (screen.get_height()/10)*8, screen.get_width()/6, screen.get_height()/10, "Maze (recursive div)")
+
 terrainButton = Button(GREY, (SCREEN_WIDTH/3)*2, SCREEN_WIDTH + BUTTON_HEIGHT*2, SCREEN_WIDTH/3, BUTTON_HEIGHT, "Random Terrain")
 visToggleButton = Button(GREY, SCREEN_WIDTH/3, SCREEN_WIDTH + BUTTON_HEIGHT*2, SCREEN_WIDTH/3, BUTTON_HEIGHT, f"Visualise: {str(VISUALISE)}")
 
@@ -184,7 +188,7 @@ while not done:
             pressed = pygame.key.get_pressed()
 
             # If click is inside grid
-            if pos[1] <= SCREEN_WIDTH-1:
+            if pos[1] <= screen.get_height()/(ROWS+100):
 
                 # Change the x/y screen coordinates to grid coordinates
                 column = pos[0] // (WIDTH + MARGIN)
@@ -220,17 +224,19 @@ while not done:
                     pygame.display.flip()
                 astarNodes =0
                 astarTime = 0
-                for x in range(30):
-                    path_found = dijkstra(grid, START_POINT, END_POINT)
-                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                    algorithm_run = 'dijkstra'
+                #for x in range(30):
+                path_found = dijkstra(grid, START_POINT, END_POINT)
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'dijkstra'
+
                 time_taken = astarTime/30
                 num_visited = astarNodes/30
                 if(time_taken == 0 or num_visited == 0):
                     print("no solution")
                 
                 else:
-                    print(f"Dijkstra finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
+                    pass
+                    #print(f"Dijkstra finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
             
             # When the DFS Button is clicked
             elif dfsButton.isOver(pos):
@@ -240,17 +246,19 @@ while not done:
                     pygame.display.flip()
                 astarTime = 0
                 astarNodes = 0
-                for x in range(30):
-                    path_found = xfs(grid, START_POINT, END_POINT, x='d')
-                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                    algorithm_run = 'dfs'
+                #for x in range(30):
+                path_found = xfs(grid, START_POINT, END_POINT, x='d')
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'dfs'
+
                 time_taken = astarTime/30
                 num_visited = astarNodes/30
                 if(time_taken == 0 or num_visited == 0):
                     print("no solution")
                 
                 else:
-                    print(f"DFS finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
+                    pass
+                    #print(f"DFS finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
             
             # When the DFS Button is clicked
             elif bfsButton.isOver(pos):
@@ -260,17 +268,19 @@ while not done:
                     pygame.display.flip()
                 astarTime = 0
                 astarNodes = 0
-                for x in range(30):
-                    path_found = xfs(grid, START_POINT, END_POINT, x='b')
-                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                    algorithm_run = 'bfs'
+                #for x in range(30):
+                path_found = xfs(grid, START_POINT, END_POINT, x='b')
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'bfs'
+
                 time_taken = astarTime/30
                 num_visited = astarNodes/30 
                 if(time_taken == 0 or num_visited == 0):
                     print("no solution")
                 
                 else: 
-                    print(f"BFS finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
+                    pass
+                    #print(f"BFS finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
             # When the A* Button is clicked
             elif astarButton.isOver(pos):
                 clear_visited()
@@ -283,8 +293,9 @@ while not done:
                     path_found = dijkstra(grid, START_POINT, END_POINT, astar=True)
                     grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
                     algorithm_run = 'astar'
-                time_taken = astarTime/30
-                num_visited = astarNodes/30
+
+                time_taken = astarTime/10
+                num_visited = astarNodes/10
                 if(time_taken == 0 or num_visited == 0):
                     print("no solution")
                 
@@ -302,22 +313,81 @@ while not done:
                     path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
                     grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
                     algorithm_run = 'greedy'
-                time_taken = astarTime/30
-                num_visited = astarNodes/30
+
+                time_taken = astarTime/10
+                num_visited = astarNodes/10
                 if(time_taken == 0 or num_visited == 0):
                     print("no solution")
                 
                 else:
                     print(f"Greedy BFS finished in {time_taken:.4f} seconds on average. That is an average of {time_taken/num_visited:.8f} seconds per node.")
+                    #pass
 
             # When the Reset Button is clicked
             elif resetButton.isOver(pos):
-                path_found = False
-                algorithm_run = False
-                for row in range(ROWS):
-                    for column in range(ROWS):
-                        if (row,column) != START_POINT and (row,column) != END_POINT:
-                            grid[row][column].update(nodetype='blank', is_visited=False, is_path=False)
+                #path_found = False
+                #algorithm_run = False
+                #for row in range(ROWS):
+                #    for column in range(ROWS):
+                #        if (row,column) != START_POINT and (row,column) != END_POINT:
+                #            grid[row][column].update(nodetype='blank', is_visited=False, is_path=False)
+                print("New Run")
+                clear_visited()
+                update_gui(draw_background=False, draw_buttons=False)
+                if VISUALISE:
+                    pygame.display.flip()
+                astarTime =0
+                astarNodes = 0
+                #for x in range(10):
+                path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'greedy'
+
+                clear_visited()
+                update_gui(draw_background=False, draw_buttons=False)
+                if VISUALISE:
+                    pygame.display.flip()
+                astarTime =0
+                astarNodes = 0
+                #for x in range(10):
+                path_found = dijkstra(grid, START_POINT, END_POINT, astar=True)
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'astar'
+
+                clear_visited()
+                update_gui(draw_background=False, draw_buttons=False)
+                if VISUALISE:
+                    pygame.display.flip()
+                astarTime = 0
+                astarNodes = 0
+                #for x in range(30):
+                path_found = xfs(grid, START_POINT, END_POINT, x='b')
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'bfs'
+
+                clear_visited()
+                update_gui(draw_background=False, draw_buttons=False)
+                if VISUALISE:
+                    pygame.display.flip()
+                astarTime = 0
+                astarNodes = 0
+                #for x in range(30):
+                path_found = xfs(grid, START_POINT, END_POINT, x='d')
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'dfs'
+
+                clear_visited()
+                update_gui(draw_background=False, draw_buttons=False)
+                if VISUALISE:    
+                    pygame.display.flip()
+                astarNodes =0
+                astarTime = 0
+                #for x in range(30):
+                path_found = dijkstra(grid, START_POINT, END_POINT)
+                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                algorithm_run = 'dijkstra'
+
+
 
             # When the Prim Button is clicked
             elif mazeButton.isOver(pos):
@@ -443,7 +513,11 @@ while not done:
 
             pygame.display.flip()
 
-
+        elif event.type == pygame.VIDEORESIZE:
+            old_surface_saved = screen
+            screen = pygame.display.set_mode((event.w, event.h),pygame.RESIZABLE)
+            screen.blit(old_surface_saved, (0,0))
+            del old_surface_saved
  
     # Game logic
 
@@ -559,10 +633,10 @@ while not done:
             screen,
             grid[row][column].color,
             [
-                (MARGIN + HEIGHT) * column + MARGIN,
-                (MARGIN + HEIGHT) * row + MARGIN,
-                WIDTH,
-                HEIGHT
+                (screen.get_height()/(ROWS+100)) * column,
+                (screen.get_height()/(ROWS+100)) * row ,
+                screen.get_height()/(ROWS+100),
+                screen.get_height()/(ROWS+100)
             ]
         )
         pygame.event.pump()
@@ -1024,7 +1098,7 @@ while not done:
         path = [goal_node]
         
         current_node = goal_node
-        
+        count = 0
         # Set the loop in motion until we get back to the start
         while current_node in came_from:
             current_node = came_from[current_node]
@@ -1032,8 +1106,9 @@ while not done:
             #print(current_node)
             mazearray[current_node[0]][current_node[1]].update(is_path=True)
             draw_square(current_node[0], current_node[1], grid=mazearray)
+            count +=1
             #print("here")
-
+        #print(count)
         #draw_square(10, 10, grid=mazearray)
         pygame.display.flip()
 
@@ -1074,15 +1149,18 @@ while not done:
                 current_node = mydeque.popleft()
           
             if current_node == goal_node:
+                count = 0
                 # Trace back to start using path_dict
                 path_node = goal_node
                 while stop != True:
                     path_node = path_dict[path_node]
                     mazearray[path_node[0]][path_node[1]].update(is_path = True)
                     draw_square(path_node[0],path_node[1],grid=mazearray)
+                    count +=1
                     if visualise:
                         update_square(path_node[0],path_node[1])
                     if path_node == start_point:
+                        print(count)
                         stop = True
                 #print("stopped")
                 
