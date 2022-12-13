@@ -107,7 +107,7 @@ MARGIN = 0
 
 # Create a 2 dimensional array (a list of lists)
 grid = []
-ROWS = 128
+ROWS = 200
 # Iterate through every row and column, adding blank nodes
 for row in range(ROWS):
     grid.append([])
@@ -120,6 +120,7 @@ END_POINT = (ROWS-1,0)
 
 astarTime = 0
 astarNodes = 0
+astarPath =0
 
 grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
 grid[END_POINT[0]][END_POINT[1]].update(nodetype='end')
@@ -331,61 +332,202 @@ while not done:
                 #    for column in range(ROWS):
                 #        if (row,column) != START_POINT and (row,column) != END_POINT:
                 #            grid[row][column].update(nodetype='blank', is_visited=False, is_path=False)
-                print("New Run")
-                clear_visited()
-                update_gui(draw_background=False, draw_buttons=False)
-                if VISUALISE:
-                    pygame.display.flip()
-                astarTime =0
-                astarNodes = 0
-                #for x in range(10):
-                path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'greedy'
+                aTime = 0
+                aSpace = 0
+                aPath = 0
 
-                clear_visited()
-                update_gui(draw_background=False, draw_buttons=False)
-                if VISUALISE:
-                    pygame.display.flip()
-                astarTime =0
-                astarNodes = 0
-                #for x in range(10):
-                path_found = dijkstra(grid, START_POINT, END_POINT, astar=True)
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'astar'
+                gTime = 0
+                gSpace = 0
+                gPath = 0
 
-                clear_visited()
-                update_gui(draw_background=False, draw_buttons=False)
-                if VISUALISE:
-                    pygame.display.flip()
-                astarTime = 0
-                astarNodes = 0
-                #for x in range(30):
-                path_found = xfs(grid, START_POINT, END_POINT, x='b')
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'bfs'
+                bTime = 0
+                bSpace = 0
+                bPath = 0
 
-                clear_visited()
-                update_gui(draw_background=False, draw_buttons=False)
-                if VISUALISE:
-                    pygame.display.flip()
-                astarTime = 0
-                astarNodes = 0
-                #for x in range(30):
-                path_found = xfs(grid, START_POINT, END_POINT, x='d')
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'dfs'
+                dTime = 0
+                dSpace = 0
+                dPath = 0
 
-                clear_visited()
-                update_gui(draw_background=False, draw_buttons=False)
-                if VISUALISE:    
-                    pygame.display.flip()
-                astarNodes =0
-                astarTime = 0
-                #for x in range(30):
-                path_found = dijkstra(grid, START_POINT, END_POINT)
-                grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
-                algorithm_run = 'dijkstra'
+                dsTime = 0
+                dsSpace = 0
+                dsPath = 0
+
+                data = []
+                for i in range(10):
+                    data.append([])
+                    for j in range(5):
+                        data[i].append([])
+                        for k in range(3):
+                            data[i][j].append(0)
+
+                for x in range(10):
+                    PrimMaze()
+                    clear_visited()
+                    update_gui(draw_background=False, draw_buttons=False)
+                    
+                    astarTime =0
+                    astarNodes = 0
+                    astarPath = 0
+                    #for x in range(10):
+                    path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'greedy'
+
+                    while astarTime == 0 or astarNodes ==0:
+                        PrimMaze()
+                        clear_visited()
+                        update_gui(draw_background=False, draw_buttons=False)
+                        
+                        astarTime =0
+                        astarNodes = 0
+                        astarPath = 0
+                        #for x in range(10):
+                        path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
+                        grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                        algorithm_run = 'greedy'
+
+
+
+                    print(f"Run {x}: Maze size: {ROWS}, Maze type: Prim's")
+                    print("Order: A-star, Greedy, BFS, DFS, Dijkstra")
+
+                    print("-----")
+                    clear_visited()
+                    update_gui(draw_background=False, draw_buttons=False)
+                    if VISUALISE:
+                        pygame.display.flip()
+                    astarTime =0
+                    astarNodes = 0
+                    astarPath = 0
+                    #for x in range(10):
+                    path_found = dijkstra(grid, START_POINT, END_POINT, astar=True)
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'astar'
+                    print(astarTime)
+                    print(astarPath)
+                    print(astarNodes)
+                    
+                    aTime += astarTime
+                    aSpace += astarNodes
+                    aPath += astarPath
+
+                    print("-----")
+                    clear_visited()
+                    update_gui(draw_background=False, draw_buttons=False)
+                    
+                    astarTime =0
+                    astarNodes = 0
+                    astarPath = 0
+                    #for x in range(10):
+                    path_found = dijkstra(grid, START_POINT, END_POINT, greedy = True)
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'greedy'
+                    print(astarTime)
+                    print(astarPath)
+                    print(astarNodes)
+                    
+                    gTime += astarTime
+                    gSpace += astarNodes
+                    gPath += astarPath
+
+                    print("-----")
+                    clear_visited()
+                    update_gui(draw_background=False, draw_buttons=False)
+                    if VISUALISE:
+                        pygame.display.flip()
+                    astarTime = 0
+                    astarNodes = 0
+                    astarPath = 0
+                    #for x in range(30):
+                    path_found = xfs(grid, START_POINT, END_POINT, x='b')
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'bfs'
+                    print(astarTime)
+                    print(astarPath)
+                    print(astarNodes)
+                    
+                    bTime += astarTime
+                    bSpace += astarNodes
+                    bPath += astarPath
+
+                    print("-----")
+                    clear_visited()
+                    update_gui(draw_background=False, draw_buttons=False)
+                    if VISUALISE:
+                        pygame.display.flip()
+                    astarTime = 0
+                    astarNodes = 0
+                    astarPath = 0
+                    #for x in range(30):
+                    path_found = xfs(grid, START_POINT, END_POINT, x='d')
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'dfs'
+                    print(astarTime)
+                    print(astarPath)
+                    print(astarNodes)
+                    
+                    dTime += astarTime
+                    dSpace += astarPath
+                    dPath += astarPath
+
+                    print("-----")
+                    clear_visited()
+                    update_gui(draw_background=False, draw_buttons=False)
+                    if VISUALISE:    
+                        pygame.display.flip()
+                    astarNodes =0
+                    astarTime = 0
+                    astarPath = 0
+                    #for x in range(30):
+                    path_found = dijkstra(grid, START_POINT, END_POINT)
+                    grid[START_POINT[0]][START_POINT[1]].update(nodetype='start')
+                    algorithm_run = 'dijkstra'
+                    print(astarTime)
+                    print(astarPath)
+                    print(astarNodes)
+                    
+                    dsTime += astarTime
+                    dsSpace += astarNodes
+                    dsPath += astarPath
+                    print("-----")
+                print("Calculated averaged values. Order: Time, Space, Path Length, Total-Cost")
+                print("A-star")
+                print(aTime/10)
+                print(aSpace/10)
+                print(aPath/10)
+                print((aTime/10)*100 + (aPath/10))
+                print("Greedy BFS")
+                print(gTime/10)
+                print(gSpace/10)
+                print(gPath/10)
+                print((gTime/10)*100 + (gPath/10))
+                print("BFS")
+                print(bTime/10)
+                print(bSpace/10)
+                print(bPath/10)
+                print((bTime/10)*100 + (bPath/10))
+                print("DFS")
+                print(dTime/10)
+                print(dSpace/10)
+                print(dPath/10)
+                print((dTime/10)*100 + (dPath/10))
+                print("Dijkstra")
+                print(dsTime/10)
+                print(dsSpace/10)
+                print(dsPath/10)
+                print((dsTime/10)*100 + (dsPath/10))
+                print("-----")
+                
+
+                for map in data:
+                    #cost = 0
+                    for trial in map:
+                        cost = 0
+                        cost = trial[0]*100 + trial[1]
+                
+                
+                
+                    
 
 
 
@@ -522,6 +664,29 @@ while not done:
     # Game logic
 
     ### UTILITY FUNCTIONS ###
+    def RandomMaze():
+        global grid
+        global path_found
+        global algorithm_run
+        path_found = False
+        algorithm_run = False
+        for row in range(ROWS):
+            for column in range(ROWS):
+                if (row,column) != START_POINT and (row,column) != END_POINT:
+                    grid[row][column].update(nodetype='blank', is_visited=False, is_path=False)
+        grid = prim()
+        
+    def PrimMaze():
+        global grid
+        global path_found
+        global algorithm_run
+        path_found = False
+        algorithm_run = False
+        for row in range(ROWS):
+            for column in range(ROWS):
+                if (row,column) != START_POINT and (row,column) != END_POINT:
+                    grid[row][column].update(nodetype='blank', is_visited=False, is_path=False)
+        grid = better_prim()
 
     # Clear board, keeping excluded nodes
     def clear_visited():
@@ -1093,7 +1258,7 @@ while not done:
 
     # (DIJKSTRA/A*) trace a path back from the end node to the start node after the algorithm has been run
     def trace_back(goal_node, start_node, v_distances, visited_nodes, n, mazearray, diags=False, visualise=VISUALISE, came_from={}):
-        
+        global astarPath
         # begin the list of nodes which will represent the path back, starting with the end node
         path = [goal_node]
         
@@ -1109,6 +1274,7 @@ while not done:
             count +=1
             #print("here")
         #print(count)
+        astarPath = count
         #draw_square(10, 10, grid=mazearray)
         pygame.display.flip()
 
@@ -1123,6 +1289,7 @@ while not done:
         '''
         global astarNodes
         global astarTime
+        global astarPath
 
         #print("start")
         assert x == 'b' or x == 'd', "x should equal 'b' or 'd' to make this bfs or dfs"
@@ -1160,7 +1327,8 @@ while not done:
                     if visualise:
                         update_square(path_node[0],path_node[1])
                     if path_node == start_point:
-                        print(count)
+                        #print(count)
+                        astarPath = count
                         stop = True
                 #print("stopped")
                 
