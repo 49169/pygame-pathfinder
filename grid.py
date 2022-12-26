@@ -1,3 +1,13 @@
+#pygame-pathfinder implemented in Python
+#Author: ChristKneller
+#https://github.com/ChrisKneller/pygame-pathfinder [accessed 06 December 2022]
+
+#The following code is a derivative work of the code from ChristKneller's pygame-pathfinder, which 
+#is licensed GLPv3. This code therefore is also licensed under the terms of the GNU Public License, verison 3.
+
+#Changes: Added Greedy Best-First Search Algorithm, Resized UI and Repositioned Buttons, Implemented Custom Maze 
+#Generation
+
 import pygame
 import time
 from priority_queue import PrioritySet, PriorityQueue, AStarQueue
@@ -20,8 +30,6 @@ BROWN = (186, 127, 50)
 DARK_GREEN = (0, 128, 0)
 DARKER_GREEN = (0, 50, 0)
 DARK_BLUE = (0, 0, 128)
-
-
 
 # For creating Buttons
 class Button():
@@ -107,7 +115,7 @@ MARGIN = 0
 
 # Create a 2 dimensional array (a list of lists)
 grid = []
-ROWS = 200
+ROWS = 50
 # Iterate through every row and column, adding blank nodes
 for row in range(ROWS):
     grid.append([])
@@ -559,7 +567,7 @@ while not done:
                     for column in range(ROWS):
                         if (row,column) != START_POINT and (row,column) != END_POINT:
                             grid[row][column].update(nodetype='blank', is_visited=False, is_path=False)
-                            draw_square(row,column)
+                            draw_square(row%5,column%5)
                 if VISUALISE:
                     pygame.display.flip()
                 recursive_division()
@@ -794,14 +802,24 @@ while not done:
 
     # For Pygame: this draws a square in the given location (for when properties updated)
     def draw_square(row,column,grid=grid):
+        height = screen.get_height()*(2/3)
+        if(ROWS==200):
+            height = 3
+        elif(ROWS ==150):
+            height = 5
+        elif(ROWS==100):
+            height=5
+        elif(ROWS==50):
+            height=6
+        
         pygame.draw.rect(
             screen,
             grid[row][column].color,
             [
-                (screen.get_height()/(ROWS+100)) * column,
-                (screen.get_height()/(ROWS+100)) * row ,
-                screen.get_height()/(ROWS+100),
-                screen.get_height()/(ROWS+100)
+                height * column,
+                height* row,
+                height,
+                height
             ]
         )
         pygame.event.pump()
@@ -1125,6 +1143,8 @@ while not done:
             recursive_division(chamber)
 
     ### PATHFINDING ALGORITHMS ###
+
+    #Changes: Added Greedy Best-First Search algorithm
 
     # Dijkstra's pathfinding algorithm, with the option to switch to A* by adding a heuristic of expected distance to end node
     def dijkstra(mazearray, start_point=(0,0), goal_node=False, display=pygame.display, visualise=VISUALISE, diagonals=DIAGONALS, astar=False, greedy = False):
