@@ -115,7 +115,7 @@ MARGIN = 0
 
 # Create a 2 dimensional array (a list of lists)
 grid = []
-ROWS = 50
+ROWS =350
 # Iterate through every row and column, adding blank nodes
 for row in range(ROWS):
     grid.append([])
@@ -164,12 +164,12 @@ dijkstraButton = Button(GREY, 0, (screen.get_height()/10)*7, screen.get_width()/
 dfsButton = Button(GREY, 0, (screen.get_height()/10)*8, screen.get_width()/6, screen.get_height()/10, "DFS")
 bfsButton = Button(GREY, 0 + screen.get_width()/6, (screen.get_height()/10)*8, screen.get_width()/6, screen.get_height()/10, "BFS")
 
-astarButton = Button(GREY, 0, (screen.get_height()/10)*9, screen.get_width()/6, screen.get_height()/10, "A*")
+astarButton = Button(GREY, 0, (screen.get_height()/10)*3, screen.get_width()/6, screen.get_height()/10, "A*")
 greedyButton = Button(GREY,  0 + screen.get_width()/6, (screen.get_height()/10)*9, screen.get_width()/6, screen.get_height()/10,"Greedy" )
 
-resetButton = Button(GREY, 0 + (screen.get_width()/6)*2, (screen.get_height()/10)*7, screen.get_width()/6, screen.get_height()/10, "Reset")
+resetButton = Button(GREY, 0 + (screen.get_width()/6)*2, (screen.get_height()/10)*4, screen.get_width()/6, screen.get_height()/10, "Reset")
 mazeButton = Button(GREY, 0 + (screen.get_width()/6)*3, (screen.get_height()/10)*7, screen.get_width()/6, screen.get_height()/10, "Maze (Prim)")
-altPrimButton = Button(GREY, 0 + (screen.get_width()/6)*4, (screen.get_height()/10)*7, screen.get_width()/6, screen.get_height()/10, "Maze (Alt Prim)")
+altPrimButton = Button(GREY, 0 + (screen.get_width()/6)*4, (screen.get_height()/10)*3, screen.get_width()/6, screen.get_height()/10, "Maze (Alt Prim)")
 recursiveMazeButton = Button(GREY, 0 + (screen.get_width()/6)*5, (screen.get_height()/10)*8, screen.get_width()/6, screen.get_height()/10, "Maze (recursive div)")
 
 terrainButton = Button(GREY, (SCREEN_WIDTH/3)*2, SCREEN_WIDTH + BUTTON_HEIGHT*2, SCREEN_WIDTH/3, BUTTON_HEIGHT, "Random Terrain")
@@ -694,7 +694,7 @@ while not done:
             for column in range(ROWS):
                 if (row,column) != START_POINT and (row,column) != END_POINT:
                     grid[row][column].update(nodetype='blank', is_visited=False, is_path=False)
-        grid = better_prim()
+        grid = prim()
 
     # Clear board, keeping excluded nodes
     def clear_visited():
@@ -811,6 +811,12 @@ while not done:
             height=5
         elif(ROWS==50):
             height=6
+        elif(ROWS==250):
+            height = 2
+        elif(ROWS==300):
+            height =2
+        elif(ROWS==350):
+            height =1
         
         pygame.draw.rect(
             screen,
